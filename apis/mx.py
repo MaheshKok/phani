@@ -265,6 +265,27 @@ def create_member(payload):
     return common_errors(response, payload)
 
 
+def read_member():
+    response = requests.get(
+        url=f"{member_api}/{member_guid}",
+        headers=headers,
+        auth=basic_auth,
+    )
+
+    if response.status_code == 200:
+        try:
+            MemberSchema().load(response.json()["member"])
+        except Exception as e:
+            print(f"error occurred validating read member response: {e}")
+
+        return {
+            "member": response.json()["member"],
+            "status_code": response.status_code,
+        }
+
+    return {"error": response.json()["error"], "status_code": response.status_code}
+
+
 def create_account(payload):
 
     response = requests.post(
@@ -286,6 +307,27 @@ def create_account(payload):
         }
 
     return common_errors(response, payload)
+
+
+def read_account():
+    response = requests.get(
+        url=f"{account_api}/{account_guid}",
+        headers=headers,
+        auth=basic_auth,
+    )
+
+    if response.status_code == 200:
+        try:
+            AccountSchema().load(response.json()["account"])
+        except Exception as e:
+            print(f"error occurred validating read account response: {e}")
+
+        return {
+            "member": response.json()["account"],
+            "status_code": response.status_code,
+        }
+
+    return {"error": response.json()["error"], "status_code": response.status_code}
 
 
 def create_transaction(payload):
@@ -439,8 +481,14 @@ def lambda_handler(event, context):
     if action == "create_member":
         return create_member(event_body)
 
+    if action == "read_member":
+        return read_member()
+
     if action == "create_account":
         return create_account(event_body)
+
+    if action == "read_account":
+        return read_account()
 
     if action == "create_transaction":
         return create_transaction(event_body)
@@ -553,15 +601,16 @@ post_action_list = [
 ]
 
 
-
 read_action_list = [
+    "read_member",
+    "read_account",
     "read_transaction",
     "list_transactions",
     "read_merchant",
     "list_merchants",
     "list_categories",
 ]
-read_event = {"action": read_action_list[4]}
+read_event = {"action": read_action_list[1]}
 
 
 payload_list = [
