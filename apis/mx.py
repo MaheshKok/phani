@@ -610,7 +610,7 @@ read_action_list = [
     "list_merchants",
     "list_categories",
 ]
-read_event = {"action": read_action_list[1]}
+read_event = {"action": read_action_list[5]}
 
 
 payload_list = [
@@ -624,4 +624,5 @@ post_event = {
     "body": payload_list[0],
 }
 
+# this is for local testing only
 print(lambda_handler(read_event, ""))
